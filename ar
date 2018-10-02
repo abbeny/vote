@@ -1,0 +1,67 @@
+#!/bin/sh
+
+#abort on error
+set -e
+
+function usage
+{
+    echo "usage: arg_parse_example -a AN_ARG -s SOME_MORE_ARGS [-y YET_MORE_ARGS || -h]"
+    echo "   ";
+    echo "  -k | --keyspace           : Keyspace name";
+    echo "  -s | --colum-family     : Colum-family name";
+    echo "  -y | --yet_more_args     : An optional argument";
+    echo "  -h | --help              : This message";
+}
+
+function parse_args
+{
+  # positional args
+  args=()
+
+  # named args
+  while [ "$1" != "" ]; do
+      case "$1" in
+          -k | --keyspace )     keyspace="$2";             shift;;
+          -s | --colum-family )         column_family="$2";     shift;;
+          -y | --yet )        yet_more_args="$2";      shift;;
+          -n | --name )         NAME="$2";              shift;;
+          -s | --source )       SOURCE="$2"             shift;;
+          -d | --dest )         DESTINATION="$2"        shift;;
+          -h | --help )                 usage;                   exit;; # quit and show usage
+          * )                           args+=("$1")             # if no match, add it to the positional args
+      esac
+      shift # move to next kv pair
+  done
+
+  # restore positional args
+  set -- "${args[@]}"
+
+  # set positionals to vars
+
+  # validate required args
+  if [[ -z "${an_arg}" || -z "${some_more_args}" ]]; then
+      echo "Invalid arguments"
+      usage
+      exit;
+  fi
+
+  # set defaults
+  if [[ -z "$yet_more_args" ]]; then
+      yet_more_args="a default value";
+  fi
+}
+
+
+function run
+{
+  parse_args "$@"
+
+
+  echo "named arg: an_arg: $an_arg"
+  echo "named arg: some_more_args: $some_more_args"
+ # echo "named arg: yet_more_args: $yet_more_args"
+}
+
+
+
+run "$@";
